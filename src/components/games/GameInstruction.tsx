@@ -7,15 +7,16 @@ export default function GameInstruction({ text }: GameInstructionProps) {
     <div className="absolute top-8 left-0 right-0 z-20 text-center px-6">
       <div
         className="
-          inline-block px-10 py-5 
+          mx-auto w-full max-w-5xl
+          px-6 py-2 sm:px-10 sm:py-3
           bg-black/60 backdrop-blur-md 
           rounded-2xl border-4 border-pink-500/50 
-          shadow-2xl
+          shadow-2xl text-center
         "
       >
         <h2
           className="
-          text-4xl sm:text-5xl md:text-6xl lg:text-7xl 
+          text-4xl sm:text-1xl md:text-2xl lg:text-3xl 
           font-black uppercase tracking-wider 
           bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 
           bg-clip-text text-transparent
