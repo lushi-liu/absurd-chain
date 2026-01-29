@@ -8,7 +8,10 @@ export default function Home() {
         Survive the chain of stupidity. One absurd game at a time.
       </p>
       <div className="space-y-4">
-        <a className="px-12 py-6 text-2xl font-bold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300 block mx-auto">
+        <a
+          href="/game/1"
+          className="px-12 py-6 text-2xl font-bold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300 block mx-auto"
+        >
           Start the Absurdity →
         </a>
         <p className="text-sm opacity-70">Warning: Highly addictive pointlessness</p>
