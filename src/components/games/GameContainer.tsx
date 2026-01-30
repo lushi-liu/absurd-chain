@@ -17,6 +17,7 @@ export default function GameContainer({ children, className }: GameContainerProp
         'bg-gradient-to-br from-indigo-950/70 via-purple-950/60 to-black/70',
         'border-8 border-pink-600/60 rounded-3xl',
         'overflow-hidden shadow-2xl backdrop-blur-sm',
+        'pl-20',
         className
       )}
     >
