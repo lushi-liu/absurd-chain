@@ -37,8 +37,10 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   }, [pendingFeedback.current]);
 
   const showFeedback = (type: 'correct' | 'wrong' | 'timeup') => {
-    pendingFeedback.current = type;
-    setTimerActive(false);
+    setTimeout(() => {
+      setFeedback(type);
+      setTimerActive(false);
+    }, 0);
   };
 
   const handleCorrect = () => {
