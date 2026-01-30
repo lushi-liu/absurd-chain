@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-// src/components/games/shape-clicker/useRandomShapeTask.ts
+
 import { useState, useEffect, useCallback } from 'react';
 
 export type ShapeType = 'circle' | 'square' | 'triangle';
