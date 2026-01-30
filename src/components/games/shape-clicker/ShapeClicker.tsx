@@ -25,7 +25,7 @@ export default function ShapeClicker({ target, onCorrect, onWrong }: Props) {
 
   const generateShapes = useCallback(() => {
     const newShapes: Shape[] = [];
-    const minDistance = 18;
+    const minDistance = 16;
 
     const isTooClose = (t: number, l: number, ex = -1) =>
       newShapes.some((s, i) => i !== ex && Math.hypot(t - s.top, l - s.left) < minDistance);
