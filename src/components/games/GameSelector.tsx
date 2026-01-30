@@ -4,7 +4,9 @@
 import { useRandomShapeTask } from './shape-clicker/useRandomShapeTask';
 import ShapeClicker from './shape-clicker/ShapeClicker';
 import TimerBar from './TimerBar';
+import LivesDisplay from './LivesDisplay';
 import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 type GameSelectorProps = {
   setInstructionText: (text: string) => void;
@@ -12,10 +14,13 @@ type GameSelectorProps = {
 };
 
 export default function GameSelector({ setInstructionText, onRoundComplete }: GameSelectorProps) {
+  const router = useRouter();
   const { task, generateNewTask } = useRandomShapeTask();
+
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | 'timeup' | null>(null);
   const [timerActive, setTimerActive] = useState(true);
   const [resetCounter, setResetCounter] = useState(0);
+  const [lives, setLives] = useState(3);
   const pendingFeedback = useRef<'correct' | 'wrong' | 'timeup' | null>(null);
 
   useEffect(() => {
@@ -32,6 +37,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   useEffect(() => {
     if (pendingFeedback.current) {
       setFeedback(pendingFeedback.current);
+      setTimerActive(false);
       pendingFeedback.current = null;
     }
   }, [pendingFeedback.current]);
@@ -40,6 +46,9 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
     setTimeout(() => {
       setFeedback(type);
       setTimerActive(false);
+      if (type === 'wrong' || type === 'timeup') {
+        setLives(prev => Math.max(0, prev - 1));
+      }
     }, 0);
   };
 
@@ -63,12 +72,16 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       const delay = 1000;
       const timer = setTimeout(() => {
         setFeedback(null);
-        generateNewTask();
+        if (lives <= 0) {
+          router.push('/');
+        } else {
+          generateNewTask();
+        }
       }, delay);
 
       return () => clearTimeout(timer);
     }
-  }, [feedback, generateNewTask]);
+  }, [feedback, lives, generateNewTask, router]);
 
   if (!task) {
     return null;
@@ -82,6 +95,8 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
         isActive={timerActive}
         resetKey={resetCounter}
       />
+
+      <LivesDisplay lives={lives} maxLives={3} />
 
       {feedback && (
         <div
