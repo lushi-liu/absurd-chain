@@ -13,7 +13,6 @@ interface ShapeItem {
 }
 
 interface Props {
-  target: { color: string; type: ShapeType };
   onCorrect: () => void;
   onWrong: () => void;
 }

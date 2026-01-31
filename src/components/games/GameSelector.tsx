@@ -37,36 +37,31 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   useEffect(() => {
     setGameId(Math.floor(Math.random() * GAME_COUNT));
   }, []);
-
-  const currentTask = gameId === 0 ? shapeHook.task : gameId === 1 ? numberHook.task : oddOneHook;
-  const generateNewTask =
-    gameId === 0
-      ? shapeHook.generateNewTask
-      : gameId === 1
-        ? numberHook.generateNewTask
-        : oddOneHook.generateNewTask;
+  const currentHook = gameId === 0 ? shapeHook : gameId === 1 ? numberHook : oddOneHook;
+  const task: GameTask | null = currentHook.task;
+  const generateNewTask = currentHook.generateNewTask;
 
   useEffect(() => {
-    if (!currentTask) return;
-
     let instruction = '';
-    if (gameId === 0) {
-      const t = currentTask as { color: string; type: string };
+    if (gameId === 0 && task) {
+      const t = task as { color: string; type: string };
       instruction = `CLICK THE ${t.color.toUpperCase()} ${t.type.toUpperCase()}`;
-    } else if (gameId === 1) {
-      const t = currentTask as { min: number; max: number };
+    } else if (gameId === 1 && task) {
+      const t = task as { min: number; max: number };
       instruction = `CLICK A NUMBER GREATER THAN ${t.min} BUT LESS THAN ${t.max}`;
-    } else {
-      const t = currentTask as { color: string; type: string };
+    } else if (gameId === 2) {
       instruction = 'CLICK THE SHAPE WITH NO PAIR';
     }
 
-    setInstructionText(instruction);
+    if (instruction) {
+      setInstructionText(instruction);
+    }
+
     setTimerActive(true);
     setFeedback(null);
     pendingFeedback.current = null;
     setResetCounter(prev => prev + 1);
-  }, [currentTask, gameId, setInstructionText]);
+  }, [gameId, task, setInstructionText]);
 
   useEffect(() => {
     if (pendingFeedback.current) {
@@ -118,7 +113,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
     }
   }, [feedback, lives, generateNewTask, router]);
 
-  if (!currentTask) {
+  if (!task && gameId !== 2) {
     return null;
   }
 
@@ -150,26 +145,16 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       )}
 
       {gameId === 0 && (
-        <ShapeClicker
-          target={currentTask as GameTask}
-          onCorrect={handleCorrect}
-          onWrong={handleWrong}
-        />
+        <ShapeClicker target={task as GameTask} onCorrect={handleCorrect} onWrong={handleWrong} />
       )}
       {gameId === 1 && (
         <NumberRangeClicker
-          target={currentTask as GameTask}
+          target={task as GameTask}
           onCorrect={handleCorrect}
           onWrong={handleWrong}
         />
       )}
-      {gameId === 2 && (
-        <OddOneOutClicker
-          target={currentTask as GameTask}
-          onCorrect={handleCorrect}
-          onWrong={handleWrong}
-        />
-      )}
+      {gameId === 2 && <OddOneOutClicker onCorrect={handleCorrect} onWrong={handleWrong} />}
     </div>
   );
 }
