@@ -12,6 +12,7 @@ import OddOneOutClicker from './odd-one-out-clicker/OddOneOutClicker';
 import TimerBar from './TimerBar';
 import LivesDisplay from './LivesDisplay';
 import { GameTask } from '@/types/game-tasks';
+import ScoreDisplay from './ScoreDisplay';
 
 type GameSelectorProps = {
   setInstructionText: (text: string) => void;
@@ -125,7 +126,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
         isActive={timerActive}
         resetKey={resetCounter}
       />
-
+      <ScoreDisplay score={0} />
       <LivesDisplay lives={lives} maxLives={3} />
 
       {feedback && (
