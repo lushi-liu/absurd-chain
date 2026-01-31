@@ -33,6 +33,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   const [timerActive, setTimerActive] = useState(true);
   const [resetCounter, setResetCounter] = useState(0);
   const [lives, setLives] = useState(3);
+  const [score, setScore] = useState(0);
   const pendingFeedback = useRef<'correct' | 'wrong' | 'timeup' | null>(null);
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
 
   const handleCorrect = () => {
     showFeedback('correct');
+    setScore(prev => prev + 1);
     onRoundComplete?.(true);
   };
 
@@ -126,7 +128,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
         isActive={timerActive}
         resetKey={resetCounter}
       />
-      <ScoreDisplay score={10} />
+      <ScoreDisplay score={score} />
       <LivesDisplay lives={lives} maxLives={3} />
 
       {feedback && (
