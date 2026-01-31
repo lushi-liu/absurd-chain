@@ -154,7 +154,9 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
           onWrong={handleWrong}
         />
       )}
-      {gameId === 2 && <OddOneOutClicker onCorrect={handleCorrect} onWrong={handleWrong} />}
+      {gameId === 2 && (
+        <OddOneOutClicker roundKey={resetCounter} onCorrect={handleCorrect} onWrong={handleWrong} />
+      )}
     </div>
   );
 }

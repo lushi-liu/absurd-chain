@@ -13,11 +13,12 @@ interface ShapeItem {
 }
 
 interface Props {
+  roundKey: number | string;
   onCorrect: () => void;
   onWrong: () => void;
 }
 
-export default function OddOneOutClicker({ onCorrect, onWrong }: Props) {
+export default function OddOneOutClicker({ roundKey, onCorrect, onWrong }: Props) {
   const [shapes, setShapes] = useState<ShapeItem[]>([]);
 
   const generateShapes = useCallback(() => {
@@ -85,7 +86,7 @@ export default function OddOneOutClicker({ onCorrect, onWrong }: Props) {
 
   useEffect(() => {
     generateShapes();
-  }, [generateShapes]);
+  }, [generateShapes, roundKey]);
 
   return (
     <div className="absolute inset-0">
