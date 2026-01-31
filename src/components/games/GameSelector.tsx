@@ -1,25 +1,29 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
+import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useRandomShapeTask } from './shape-clicker/useRandomShapeTask';
-import { useRandomNumberTask } from './number-range-clicker/useRandomNumberTask';
 import ShapeClicker from './shape-clicker/ShapeClicker';
+import { useRandomNumberTask } from './number-range-clicker/useRandomNumberTask';
 import NumberRangeClicker from './number-range-clicker/NumberRangeClicker';
 import TimerBar from './TimerBar';
 import LivesDisplay from './LivesDisplay';
-import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 
 type GameSelectorProps = {
   setInstructionText: (text: string) => void;
   onRoundComplete?: (wasCorrect: boolean) => void;
 };
 
+const GAME_COUNT = 2;
+
 export default function GameSelector({ setInstructionText, onRoundComplete }: GameSelectorProps) {
   const router = useRouter();
-  //const { task, generateNewTask } = useRandomShapeTask();
-  const { task, generateNewTask } = useRandomNumberTask();
 
+  const shapeHook = useRandomShapeTask();
+  const numberHook = useRandomNumberTask();
+
+  const [gameId, setGameId] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | 'timeup' | null>(null);
   const [timerActive, setTimerActive] = useState(true);
   const [resetCounter, setResetCounter] = useState(0);
@@ -27,16 +31,30 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   const pendingFeedback = useRef<'correct' | 'wrong' | 'timeup' | null>(null);
 
   useEffect(() => {
-    if (task) {
-      //const instruction = `CLICK THE ${task.color.toUpperCase()} ${task.type.toUpperCase()}`;
-      const instruction = `CLICK THE NUMBER LESS THAN ${task.max}, GREATER THAN ${task.min}`;
-      setInstructionText(instruction);
-      setTimerActive(true);
-      setFeedback(null);
-      pendingFeedback.current = null;
-      setResetCounter(prev => prev + 1);
+    setGameId(Math.floor(Math.random() * GAME_COUNT));
+  }, []);
+
+  const currentTask = gameId === 0 ? shapeHook.task : numberHook.task;
+  const generateNewTask = gameId === 0 ? shapeHook.generateNewTask : numberHook.generateNewTask;
+
+  useEffect(() => {
+    if (!currentTask) return;
+
+    let instruction = '';
+    if (gameId === 0) {
+      const t = currentTask as { color: string; type: string }; // shape task
+      instruction = `CLICK THE ${t.color.toUpperCase()} ${t.type.toUpperCase()}`;
+    } else {
+      const t = currentTask as { min: number; max: number }; // number task
+      instruction = `CLICK A NUMBER GREATER THAN ${t.min} BUT LESS THAN ${t.max}`;
     }
-  }, [task, setInstructionText]);
+
+    setInstructionText(instruction);
+    setTimerActive(true);
+    setFeedback(null);
+    pendingFeedback.current = null;
+    setResetCounter(prev => prev + 1);
+  }, [currentTask, gameId, setInstructionText]);
 
   useEffect(() => {
     if (pendingFeedback.current) {
@@ -44,7 +62,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       setTimerActive(false);
       pendingFeedback.current = null;
     }
-  }, [pendingFeedback.current]);
+  }, []);
 
   const showFeedback = (type: 'correct' | 'wrong' | 'timeup') => {
     setTimeout(() => {
@@ -79,6 +97,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
         if (lives <= 0) {
           router.push('/');
         } else {
+          setGameId(Math.floor(Math.random() * GAME_COUNT));
           generateNewTask();
         }
       }, delay);
@@ -87,7 +106,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
     }
   }, [feedback, lives, generateNewTask, router]);
 
-  if (!task) {
+  if (!currentTask) {
     return null;
   }
 
@@ -117,7 +136,17 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
           </div>
         </div>
       )}
-      <NumberRangeClicker target={task} onCorrect={handleCorrect} onWrong={handleWrong} />
+
+      {gameId === 0 && (
+        <ShapeClicker target={currentTask as any} onCorrect={handleCorrect} onWrong={handleWrong} />
+      )}
+      {gameId === 1 && (
+        <NumberRangeClicker
+          target={currentTask as any}
+          onCorrect={handleCorrect}
+          onWrong={handleWrong}
+        />
+      )}
     </div>
   );
 }
