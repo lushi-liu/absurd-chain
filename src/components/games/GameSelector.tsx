@@ -126,7 +126,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
         isActive={timerActive}
         resetKey={resetCounter}
       />
-      <ScoreDisplay score={0} />
+      <ScoreDisplay score={10} />
       <LivesDisplay lives={lives} maxLives={3} />
 
       {feedback && (

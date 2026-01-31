@@ -30,7 +30,6 @@ export default function ShapeClicker({ target, onCorrect, onWrong }: Props) {
     const isTooClose = (t: number, l: number, ex = -1) =>
       newShapes.some((s, i) => i !== ex && Math.hypot(t - s.top, l - s.left) < minDistance);
 
-    // correct shape
     let top: number,
       left: number,
       attempts = 0;
@@ -42,8 +41,7 @@ export default function ShapeClicker({ target, onCorrect, onWrong }: Props) {
 
     newShapes.push({ id: crypto.randomUUID(), type: target.type, color: target.color, top, left });
 
-    // distractors
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 9; i++) {
       attempts = 0;
       do {
         top = 20 + Math.random() * 60;
