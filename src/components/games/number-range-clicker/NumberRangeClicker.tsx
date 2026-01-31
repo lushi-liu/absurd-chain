@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -25,12 +24,11 @@ export default function NumberRangeClicker({ target, onCorrect, onWrong }: Props
     const selected = allNums
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.floor(Math.random() * 3) + 6);
+
     const minDistance = 18;
 
-    const isTooClose = (t: number, l: number, ex = -1) =>
-      numbers.some((n, i) => i !== ex && Math.hypot(t - n.top, l - n.left) < minDistance);
-
     const newNumbers: NumberItem[] = [];
+
     for (const value of selected) {
       let attempts = 0;
       let top: number, left: number;
@@ -38,13 +36,15 @@ export default function NumberRangeClicker({ target, onCorrect, onWrong }: Props
         top = 20 + Math.random() * 60;
         left = 20 + Math.random() * 60;
         attempts++;
-      } while (isTooClose(top, left) && attempts < 50);
+        const tooClose = newNumbers.some(n => Math.hypot(top - n.top, left - n.left) < minDistance);
+        if (!tooClose || attempts > 50) break;
+      } while (attempts < 50);
 
       newNumbers.push({ id: crypto.randomUUID(), value, top, left });
     }
 
     setNumbers(newNumbers.sort(() => Math.random() - 0.5));
-  }, [numbers]);
+  }, []);
 
   const handleClick = useCallback(
     (num: NumberItem) => {
@@ -54,9 +54,10 @@ export default function NumberRangeClicker({ target, onCorrect, onWrong }: Props
     [target, onCorrect, onWrong]
   );
 
+  // Re-generate numbers whenever target (min/max) changes
   useEffect(() => {
     generateNumbers();
-  }, [generateNumbers]);
+  }, [generateNumbers, target.min, target.max]);
 
   return (
     <div className="absolute inset-0">

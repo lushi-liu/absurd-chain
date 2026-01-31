@@ -2,7 +2,9 @@
 'use client';
 
 import { useRandomShapeTask } from './shape-clicker/useRandomShapeTask';
+import { useRandomNumberTask } from './number-range-clicker/useRandomNumberTask';
 import ShapeClicker from './shape-clicker/ShapeClicker';
+import NumberRangeClicker from './number-range-clicker/NumberRangeClicker';
 import TimerBar from './TimerBar';
 import LivesDisplay from './LivesDisplay';
 import { useEffect, useState, useRef } from 'react';
@@ -15,7 +17,8 @@ type GameSelectorProps = {
 
 export default function GameSelector({ setInstructionText, onRoundComplete }: GameSelectorProps) {
   const router = useRouter();
-  const { task, generateNewTask } = useRandomShapeTask();
+  //const { task, generateNewTask } = useRandomShapeTask();
+  const { task, generateNewTask } = useRandomNumberTask();
 
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | 'timeup' | null>(null);
   const [timerActive, setTimerActive] = useState(true);
@@ -25,7 +28,8 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
 
   useEffect(() => {
     if (task) {
-      const instruction = `CLICK THE ${task.color.toUpperCase()} ${task.type.toUpperCase()}`;
+      //const instruction = `CLICK THE ${task.color.toUpperCase()} ${task.type.toUpperCase()}`;
+      const instruction = `CLICK THE NUMBER LESS THAN ${task.max}, GREATER THAN ${task.min}`;
       setInstructionText(instruction);
       setTimerActive(true);
       setFeedback(null);
@@ -100,7 +104,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
 
       {feedback && (
         <div
-          className={`fixed inset-0 z-50 flex items-center justify-center pointer-events-none ${
+          className={`fixed inset-0 z-50 flex items-center justify-center pointer-events-auto ${
             feedback === 'correct'
               ? 'bg-green-500/40'
               : feedback === 'wrong'
@@ -113,8 +117,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
           </div>
         </div>
       )}
-
-      <ShapeClicker target={task} onCorrect={handleCorrect} onWrong={handleWrong} />
+      <NumberRangeClicker target={task} onCorrect={handleCorrect} onWrong={handleWrong} />
     </div>
   );
 }
