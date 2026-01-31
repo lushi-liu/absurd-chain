@@ -12,7 +12,7 @@ export default function GameContainer({ children, className }: GameContainerProp
   return (
     <div
       className={cn(
-        'relative w-full max-w-5xl mx-auto',
+        'relative w-full max-w-6xl mx-auto',
         'aspect-[4/3] sm:aspect-[16/9]',
         'bg-gradient-to-br from-indigo-950/70 via-purple-950/60 to-black/70',
         'border-8 border-pink-600/60 rounded-3xl',

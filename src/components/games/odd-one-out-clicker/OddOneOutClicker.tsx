@@ -22,8 +22,11 @@ export default function OddOneOutClicker({ roundKey, onCorrect, onWrong }: Props
   const [shapes, setShapes] = useState<ShapeItem[]>([]);
 
   const generateShapes = useCallback(() => {
-    const pairsCount = 3;
+    const pairsCount = 4;
     const newShapes: ShapeItem[] = [];
+
+    const isTooClose = (top: number, left: number, excludeIndex = -1) =>
+      newShapes.some((s, i) => i !== excludeIndex && Math.hypot(top - s.top, left - s.left) < 18);
 
     for (let i = 0; i < pairsCount; i++) {
       const type = SHAPES[Math.floor(Math.random() * SHAPES.length)];
@@ -36,16 +39,16 @@ export default function OddOneOutClicker({ roundKey, onCorrect, onWrong }: Props
         top = 15 + Math.random() * 70;
         left = 15 + Math.random() * 70;
         attempts++;
-      } while (newShapes.some(s => Math.hypot(top - s.top, left - s.left) < 18) && attempts < 100);
+      } while (isTooClose(top, left) && attempts < 100);
 
       newShapes.push({ id: crypto.randomUUID(), type, color, top, left });
 
       attempts = 0;
       do {
-        top = top + (Math.random() - 0.5) * 20;
-        left = left + (Math.random() - 0.5) * 20;
+        top = 15 + Math.random() * 70;
+        left = 15 + Math.random() * 70;
         attempts++;
-      } while (newShapes.some(s => Math.hypot(top - s.top, left - s.left) < 12) && attempts < 100);
+      } while (isTooClose(top, left) && attempts < 100);
 
       newShapes.push({ id: crypto.randomUUID(), type, color, top, left });
     }
@@ -63,7 +66,7 @@ export default function OddOneOutClicker({ roundKey, onCorrect, onWrong }: Props
       top = 15 + Math.random() * 70;
       left = 15 + Math.random() * 70;
       attempts++;
-    } while (newShapes.some(s => Math.hypot(top - s.top, left - s.left) < 18) && attempts < 100);
+    } while (isTooClose(top, left) && attempts < 100);
 
     newShapes.push({ id: crypto.randomUUID(), type: oddType, color: oddColor, top, left });
 
