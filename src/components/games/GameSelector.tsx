@@ -9,6 +9,7 @@ import { useRandomNumberTask } from './number-range-clicker/useRandomNumberTask'
 import NumberRangeClicker from './number-range-clicker/NumberRangeClicker';
 import TimerBar from './TimerBar';
 import LivesDisplay from './LivesDisplay';
+import { GameTask } from '@/types/game-tasks';
 
 type GameSelectorProps = {
   setInstructionText: (text: string) => void;
@@ -138,11 +139,15 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       )}
 
       {gameId === 0 && (
-        <ShapeClicker target={currentTask as any} onCorrect={handleCorrect} onWrong={handleWrong} />
+        <ShapeClicker
+          target={currentTask as GameTask}
+          onCorrect={handleCorrect}
+          onWrong={handleWrong}
+        />
       )}
       {gameId === 1 && (
         <NumberRangeClicker
-          target={currentTask as any}
+          target={currentTask as GameTask}
           onCorrect={handleCorrect}
           onWrong={handleWrong}
         />

@@ -1,15 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback } from 'react';
+import { GameTask } from '@/types/game-tasks';
 
 export type ShapeType = 'circle' | 'square' | 'triangle';
 
 export function useRandomNumberTask() {
-  const [task, setTask] = useState<{
-    color: string;
-    type: ShapeType;
-    min: number;
-    max: number;
-  } | null>(null);
+  const [task, setTask] = useState<GameTask | null>(null);
 
   const generateNewTask = useCallback(() => {
     const min = Math.floor(Math.random() * 8);

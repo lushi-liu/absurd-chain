@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import { useState, useEffect, useCallback } from 'react';
+import { GameTask } from '@/types/game-tasks';
 
 export type ShapeType = 'circle' | 'square' | 'triangle';
 
@@ -17,12 +18,7 @@ export const COLORS = [
 export const SHAPES = ['circle', 'square', 'triangle'] as const;
 
 export function useRandomShapeTask() {
-  const [task, setTask] = useState<{
-    color: string;
-    type: ShapeType;
-    min: number;
-    max: number;
-  } | null>(null);
+  const [task, setTask] = useState<GameTask | null>(null);
 
   const generateNewTask = useCallback(() => {
     const type = SHAPES[Math.floor(Math.random() * SHAPES.length)];
