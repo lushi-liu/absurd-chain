@@ -13,6 +13,7 @@ import TimerBar from './TimerBar';
 import LivesDisplay from './LivesDisplay';
 import { GameTask } from '@/types/game-tasks';
 import ScoreDisplay from './ScoreDisplay';
+import GameOverScreen from './GameOverScreen';
 
 type GameSelectorProps = {
   setInstructionText: (text: string) => void;
@@ -34,6 +35,8 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   const [resetCounter, setResetCounter] = useState(0);
   const [lives, setLives] = useState(3);
   const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+
   const pendingFeedback = useRef<'correct' | 'wrong' | 'timeup' | null>(null);
 
   useEffect(() => {
@@ -78,7 +81,13 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       setFeedback(type);
       setTimerActive(false);
       if (type === 'wrong' || type === 'timeup') {
-        setLives(prev => Math.max(0, prev - 1));
+        setLives(prev => {
+          const newLives = Math.max(0, prev - 1);
+          if (newLives === 0) {
+            setTimeout(() => setGameOver(true), 1200);
+          }
+          return newLives;
+        });
       }
     }, 0);
   };
@@ -104,9 +113,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       const delay = 1000;
       const timer = setTimeout(() => {
         setFeedback(null);
-        if (lives <= 0) {
-          router.push('/');
-        } else {
+        if (lives > 0) {
           setGameId(Math.floor(Math.random() * GAME_COUNT));
           generateNewTask();
         }
@@ -114,7 +121,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
 
       return () => clearTimeout(timer);
     }
-  }, [feedback, lives, generateNewTask, router]);
+  }, [feedback]);
 
   if (!task && gameId !== 2) {
     return null;
@@ -145,6 +152,23 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
             {feedback === 'correct' ? 'CORRECT!' : feedback === 'wrong' ? 'WRONG!' : 'TIME UP!'}
           </div>
         </div>
+      )}
+
+      {gameOver && (
+        <GameOverScreen
+          finalScore={score}
+          onRetry={() => {
+            setGameOver(false);
+            setLives(3);
+            setScore(0);
+            setTimerActive(true);
+            setFeedback(null);
+            setGameId(Math.floor(Math.random() * GAME_COUNT));
+            generateNewTask();
+            setResetCounter(prev => prev + 1);
+          }}
+          onHome={() => router.push('/')}
+        />
       )}
 
       {gameId === 0 && (
