@@ -21,13 +21,13 @@ export default function GameOverScreen({ finalScore, onRetry, onHome }: GameOver
         <div className="flex flex-col sm:flex-row gap-6 pt-8">
           <button
             onClick={onRetry}
-            className="px-12 py-6 text-2xl bg-emerald-600 hover:bg-emerald-700 rounded-2xl shadow-2xl transition-all hover:scale-105 font-bold border-4 border-emerald-400/50"
+            className="px-12 py-6 text-2xl bg-emerald-600 hover:bg-emerald-700 rounded-2xl shadow-2xl transition-all hover:scale-105 font-bold border-4 border-emerald-400/50 cursor-pointer"
           >
             RETRY
           </button>
           <button
             onClick={onHome}
-            className="px-12 py-6 text-2xl bg-gray-700 hover:bg-gray-800 rounded-2xl shadow-2xl transition-all hover:scale-105 font-bold border-4 border-gray-500/50"
+            className="px-12 py-6 text-2xl bg-gray-700 hover:bg-gray-800 rounded-2xl shadow-2xl transition-all hover:scale-105 font-bold border-4 border-gray-500/50 cursor-pointer"
           >
             HOME
           </button>

@@ -17,6 +17,7 @@ export default function BackHomeButton() {
         hover:bg-black/80 hover:text-purple-200 
         transition-all duration-200 shadow-lg
         text-lg font-semibold
+        cursor-pointer
       "
     >
       <ArrowLeft size={20} />
