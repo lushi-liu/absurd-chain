@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useRandomShapeTask } from './shape-clicker/useRandomShapeTask';
 import ShapeClicker from './shape-clicker/ShapeClicker';
@@ -14,6 +15,7 @@ import LivesDisplay from './LivesDisplay';
 import { GameTask } from '@/types/game-tasks';
 import ScoreDisplay from './ScoreDisplay';
 import GameOverScreen from './GameOverScreen';
+import { supabase } from '@/lib/supabase';
 
 type GameSelectorProps = {
   setInstructionText: (text: string) => void;
@@ -28,6 +30,8 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   const shapeHook = useRandomShapeTask();
   const numberHook = useRandomNumberTask();
   const oddOneHook = useRandomOddOneTask();
+
+  const searchParams = useSearchParams();
 
   const [gameId, setGameId] = useState(0);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | 'timeup' | null>(null);
@@ -122,6 +126,24 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
       return () => clearTimeout(timer);
     }
   }, [feedback]);
+
+  useEffect(() => {
+    if (lives <= 0 && !gameOver) {
+      const saveScore = async () => {
+        const playerName = searchParams.get('name') || 'Anonymous';
+
+        const { error } = await supabase.from('high_scores').insert({
+          player_name: playerName,
+          score: score,
+        });
+
+        if (error) console.error('Failed to save score:', error);
+      };
+
+      saveScore();
+      setGameOver(true);
+    }
+  }, [lives, score, gameOver, searchParams]);
 
   if (!task && gameId !== 2) {
     return null;
