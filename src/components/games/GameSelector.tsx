@@ -42,6 +42,7 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   const [gameOver, setGameOver] = useState(false);
 
   const pendingFeedback = useRef<'correct' | 'wrong' | 'timeup' | null>(null);
+  const hasSavedGameOver = useRef(false);
 
   useEffect(() => {
     setGameId(Math.floor(Math.random() * GAME_COUNT));
@@ -81,54 +82,31 @@ export default function GameSelector({ setInstructionText, onRoundComplete }: Ga
   }, []);
 
   const showFeedback = (type: 'correct' | 'wrong' | 'timeup') => {
-    console.log('[showFeedback] called with type:', type, 'current lives:', lives);
-
     setTimeout(() => {
-      console.log('[showFeedback timeout] setting feedback to:', type);
       setFeedback(type);
       setTimerActive(false);
 
       if (type === 'wrong' || type === 'timeup') {
-        console.log('[showFeedback] decreasing lives from:', lives);
         setLives(prev => {
           const newLives = Math.max(0, prev - 1);
-          console.log('[setLives callback] newLives calculated as:', newLives);
 
-          if (newLives === 0) {
-            console.log('[CRITICAL] LIVES HIT 0! Final score was:', score);
-            console.trace('Stack trace at lives === 0');
+          if (newLives === 0 && !hasSavedGameOver.current) {
+            hasSavedGameOver.current = true;
 
-            // Save attempt with extra logging
             const saveScore = async () => {
               const playerName = searchParams.get('name') || 'Anonymous';
-              console.log('[saveScore] Starting save for name:', playerName, 'score:', score);
-              console.log(supabase);
 
-              try {
-                const { data, error } = await supabase
-                  .from('high_scores')
-                  .insert({ player_name: playerName, score });
+              const { error } = await supabase.from('high_scores').insert({
+                player_name: playerName,
+                score,
+              });
 
-                if (error) {
-                  console.error('[saveScore ERROR FULL DETAILS]:', error);
-                  console.error('Error code:', error.code);
-                  console.error('Error message:', error.message);
-                  console.error('Error details:', error.details);
-                  console.error('Error hint:', error.hint);
-                } else {
-                  console.log('[saveScore SUCCESS] Inserted:', data);
-                }
-              } catch (err) {
-                console.error('[saveScore FATAL EXCEPTION]:', err);
-              }
+              if (error) console.error('Failed to save score:', error);
             };
 
             saveScore();
 
-            setTimeout(() => {
-              console.log('[setGameOver] Setting gameOver to true');
-              setGameOver(true);
-            }, 1200);
+            setTimeout(() => setGameOver(true), 1200);
           }
 
           return newLives;
